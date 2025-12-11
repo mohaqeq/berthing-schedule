@@ -104,39 +104,6 @@
         width: 100%;
         height: 100%;
       }
-
-      .event-log {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        padding: 1rem;
-        max-width: 300px;
-        max-height: 200px;
-        overflow-y: auto;
-        font-size: 0.85rem;
-        z-index: 1000;
-      }
-
-      .event-log h3 {
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        color: #333;
-      }
-
-      .event-log .event {
-        padding: 0.4rem;
-        margin-bottom: 0.3rem;
-        background: #f8f9fa;
-        border-left: 3px solid #3498db;
-        border-radius: 2px;
-      }
-
-      .event-log .event strong {
-        color: #2c3e50;
-      }
     </style>
     <script type="module" src="/src/demo.ts"></script>
   </head>
@@ -183,11 +150,6 @@
           <berthing-schedule id="schedule"></berthing-schedule>
         </div>
       </main>
-
-      <div class="event-log" id="eventLog">
-        <h3>Event Log</h3>
-        <div id="eventList"></div>
-      </div>
     </div>
   </body>
 </html>

@@ -4,10 +4,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import type { QuayConfig, Berth, Bollard } from './types';
 import { meterToEm, toCSS } from '../utils/utils';
 
-/**
- * Quay Panel Component
- * Displays berths and bollards horizontally
- */
 @customElement('quay-panel')
 export class QuayPanel extends LitElement {
   @property({ type: Object })

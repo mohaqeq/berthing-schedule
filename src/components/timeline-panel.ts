@@ -4,10 +4,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import type { TimelineConfig } from './types';
 import { hourDifference, formatTime, formatDate, hourToEm } from '../utils/utils';
 
-/**
- * Timeline Panel Component
- * Displays the vertical timeline with day and hour markers
- */
 @customElement('timeline-panel')
 export class TimelinePanel extends LitElement {
   @property({ type: Object })

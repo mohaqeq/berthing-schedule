@@ -1,6 +1,4 @@
-/**
- * Demo data for testing the berth schedule component
- */
+
 
 import type {
   BerthScheduleConfig,
@@ -15,7 +13,7 @@ export const demoConfiguration: BerthScheduleConfig = {
   backgroundColor: '#ffffff',
   zoom: 1,
   timeLine: {
-    startDate: new Date('2024-12-08 00:00'),
+    startDate: new Date('2024-12-09 00:00'),
     endDate: new Date('2024-12-15 00:00'),
     emPerHour: 2,
     dateFormat: 'DayMonth',
@@ -412,10 +410,10 @@ export const demoSchedules: ScheduleItem[] = [
     borderColor: '#885599',
     borderThickness: 2,
     description: 'LNG Tanker',
-    startBollardId: 'b11',
-    endBollardId: 'b13',
-    startDate: new Date('2024-12-12 14:00'),
-    endDate: new Date('2024-12-13 08:00'),
+    startBollardId: 'b12',
+    endBollardId: 'b14',
+    startDate: new Date('2024-12-12 21:00'),
+    endDate: new Date('2024-12-13 10:00'),
     zIndex: 5,
     vessel: {
       id: 'vessel-005',
@@ -448,7 +446,7 @@ export const demoSchedules: ScheduleItem[] = [
     borderColor: '#449977',
     borderThickness: 2,
     description: 'Chemical Tanker',
-    startBollardId: 'b33',
+    startBollardId: 'b32',
     endBollardId: 'b34',
     startDate: new Date('2024-12-13 10:00'),
     endDate: new Date('2024-12-14 06:00'),

@@ -4,10 +4,6 @@ import { styleMap } from 'lit/directives/style-map.js';
 import type { TimelineConfig, QuayConfig } from './types';
 import { hourDifference, hourToEm, meterToEm } from '../utils/utils';
 
-/**
- * Grid Lines Component
- * Displays horizontal time grid lines and vertical bollard grid lines
- */
 @customElement('grid-lines')
 export class GridLines extends LitElement {
   @property({ type: Object })
@@ -116,7 +112,6 @@ export class GridLines extends LitElement {
     const { bollardGridColor, berthEndColor } = this.quayConfig;
     const lines: Array<{ offset: string; color: string; isBerthEnd: boolean }> = [];
 
-    // Add lines for each bollard
     this.bollardPositions.forEach((position) => {
       const offset = meterToEm(position, this.quayConfig.emPerMeter);
       lines.push({
@@ -126,7 +121,6 @@ export class GridLines extends LitElement {
       });
     });
 
-    // Add lines for berth ends
     this.berthEndPositions.forEach((position) => {
       const offset = meterToEm(position, this.quayConfig.emPerMeter);
       lines.push({

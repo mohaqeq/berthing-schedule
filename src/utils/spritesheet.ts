@@ -1,7 +1,4 @@
-/**
- * Spritesheet loader utility
- * Loads and caches sprite positions from spritesheet.json
- */
+
 
 interface SpriteFrame {
   frame: { x: number; y: number; w: number; h: number };
@@ -25,9 +22,6 @@ interface SpriteSheet {
 let spritesheetData: SpriteSheet | null = null;
 let loadingPromise: Promise<SpriteSheet> | null = null;
 
-/**
- * Load the spritesheet.json file
- */
 export async function loadSpritesheet(): Promise<SpriteSheet> {
   if (spritesheetData) {
     return spritesheetData;
@@ -53,9 +47,6 @@ export async function loadSpritesheet(): Promise<SpriteSheet> {
   return loadingPromise;
 }
 
-/**
- * Get sprite position for a given sprite name
- */
 export function getSpritePosition(
   spriteName: string
 ): { x: number; y: number; w: number; h: number } | null {
@@ -71,9 +62,6 @@ export function getSpritePosition(
   return frame.frame;
 }
 
-/**
- * Get spritesheet dimensions
- */
 export function getSpritesheetSize(): { w: number; h: number } | null {
   if (!spritesheetData) {
     return null;
@@ -82,12 +70,6 @@ export function getSpritesheetSize(): { w: number; h: number } | null {
   return spritesheetData.meta.size;
 }
 
-/**
- * Generate CSS for sprite positioning
- * @param spriteName - Name of the sprite in the spritesheet
- * @param scale - Scale factor for the sprite (default: 0.5)
- * @param transformOrigin - CSS transform-origin value (default: 'top left')
- */
 export function getSpriteCss(
   spriteName: string,
   scale: number = 0.5,

@@ -10,86 +10,42 @@ import type {
 import { isVesselCall } from './types';
 import { hourDifference, hourToEm, meterToEm } from '../utils/utils';
 
-// Import sub-components
 import './corner-box';
 import './timeline-panel';
 import './quay-panel';
 import './vessel-box';
 import './grid-lines';
 
-/**
- * Berthing Schedule Web Component
- *
- * A native web component for visualizing and managing berth schedules.
- * Uses HTML/CSS for rendering with support for theming via CSS custom properties.
- *
- * @fires vessel-click - Dispatched when a vessel is clicked
- * @fires scroll - Dispatched when the schedule is scrolled
- * @fires loading-complete - Dispatched when initial rendering is complete
- *
- * @cssprop --berth-schedule-bg - Background color of the schedule
- * @cssprop --berth-schedule-border - Border color
- * @cssprop --berth-schedule-text - Text color
- */
 @customElement('berthing-schedule')
 export class BerthingSchedule extends LitElement {
-  /**
-   * Configuration for the berth schedule
-   */
+  
   @property({ type: Object })
   configuration!: BerthScheduleConfig;
 
-  /**
-   * Array of schedule items (vessel calls, non-working periods)
-   */
   @property({ type: Array })
   schedules: ScheduleItem[] = [];
 
-  /**
-   * Total timeline duration in hours
-   */
   @state()
   private timelineDuration = 0;
 
-  /**
-   * Total quay length in meters
-   */
   @state()
   private quayLength = 0;
 
-  /**
-   * Map of bollard IDs to their positions (in meters from start)
-   */
   @state()
   private bollardPositions = new Map<string, number>();
 
-  /**
-   * Array of berth end positions (in meters from start)
-   */
   @state()
   private berthEndPositions: number[] = [];
 
-  /**
-   * Currently dragging item
-   */
   @state()
   private draggingItem: ScheduleItem | null = null;
 
-  /**
-   * Drag operation type
-   */
   @state()
   private dragType: 'move' | 'resize' | null = null;
 
-  /**
-   * Initial drag position
-   */
   private dragStartX = 0;
   private dragStartY = 0;
 
-  /**
-   * Original item state before drag
-   */
   private originalStartBollardId = '';
   private originalEndBollardId = '';
   private originalStartDate: Date | null = null;
@@ -263,11 +219,9 @@ export class BerthingSchedule extends LitElement {
       return;
     }
 
-    // Calculate timeline duration
     const { startDate, endDate } = this.configuration.timeLine;
     this.timelineDuration = hourDifference(startDate, endDate);
 
-    // Calculate quay length and bollard positions
     let currentPosition = 0;
     this.bollardPositions.clear();
     this.berthEndPositions = [];
@@ -281,7 +235,7 @@ export class BerthingSchedule extends LitElement {
           );
         }
         currentPosition += berth.length;
-        // Store berth end position
+        
         this.berthEndPositions.push(currentPosition);
       }
       this.quayLength = currentPosition;
@@ -372,13 +326,9 @@ export class BerthingSchedule extends LitElement {
     `;
   }
 
-  /**
-   * Handle move start event
-   */
   private handleMoveStart = (e: CustomEvent) => {
     const { vessel, startX, startY } = e.detail;
 
-    // Check if move is locked
     if (vessel.moveLocked) return;
 
     this.draggingItem = vessel;
@@ -391,13 +341,9 @@ export class BerthingSchedule extends LitElement {
     this.originalEndDate = new Date(vessel.endDate);
   };
 
-  /**
-   * Handle stretch (resize) start event
-   */
   private handleStretchStart = (e: CustomEvent) => {
     const { vessel, startY } = e.detail;
 
-    // Check if operation time is locked
     if (vessel.operationTimeLocked) return;
 
     this.draggingItem = vessel;
@@ -406,9 +352,6 @@ export class BerthingSchedule extends LitElement {
     this.originalEndDate = new Date(vessel.endDate);
   };
 
-  /**
-   * Handle mouse move during drag
-   */
   private handleMouseMove = (e: MouseEvent) => {
     if (!this.draggingItem || !this.dragType) return;
 
@@ -419,9 +362,6 @@ export class BerthingSchedule extends LitElement {
     }
   };
 
-  /**
-   * Handle move operation
-   */
   private handleMoveOperation(e: MouseEvent) {
     if (!this.draggingItem) return;
 
@@ -432,14 +372,12 @@ export class BerthingSchedule extends LitElement {
     const emPerMeter = this.configuration.quay.emPerMeter;
     const emPerHour = this.configuration.timeLine.emPerHour || 1;
 
-    // Calculate new position in meters
     const deltaMeters = (deltaX / fontSize) / emPerMeter;
     const originalStartPos = this.bollardPositions.get(this.originalStartBollardId) || 0;
     const originalEndPos = this.bollardPositions.get(this.originalEndBollardId) || 0;
     const newStartPos = originalStartPos + deltaMeters;
     const newEndPos = originalEndPos + deltaMeters;
 
-    // Find nearest bollards for snapping
     let nearestStartId: string | null = null;
     let nearestEndId: string | null = null;
     let minStartDistance = Infinity;
@@ -459,11 +397,9 @@ export class BerthingSchedule extends LitElement {
       }
     });
 
-    // Update bollard positions
     if (nearestStartId) this.draggingItem.startBollardId = nearestStartId;
     if (nearestEndId) this.draggingItem.endBollardId = nearestEndId;
 
-    // Calculate new time position
     const deltaHours = (deltaY / fontSize) / emPerHour;
     const deltaMs = deltaHours * 3600000;
 
@@ -471,7 +407,6 @@ export class BerthingSchedule extends LitElement {
       const newStartTime = new Date(this.originalStartDate.getTime() + deltaMs);
       const newEndTime = new Date(this.originalEndDate.getTime() + deltaMs);
 
-      // Round to nearest hour for snapping
       newStartTime.setMinutes(Math.round(newStartTime.getMinutes() / 60) * 60);
       newEndTime.setMinutes(Math.round(newEndTime.getMinutes() / 60) * 60);
 
@@ -480,11 +415,9 @@ export class BerthingSchedule extends LitElement {
       this.draggingItem.startDate = newStartTime;
       this.draggingItem.endDate = newEndTime;
 
-      // Update voyage timing if it exists
       if (isVesselCall(this.draggingItem) && this.draggingItem.voyage?.timing && effectiveDeltaMs !== 0) {
         const timing = this.draggingItem.voyage.timing;
 
-        // Move all timing dates by the same delta
         if (timing.anchorage) {
           timing.anchorage = new Date(timing.anchorage.getTime() + effectiveDeltaMs);
         }
@@ -509,9 +442,6 @@ export class BerthingSchedule extends LitElement {
     this.requestUpdate();
   };
 
-  /**
-   * Handle resize operation
-   */
   private handleResizeOperation(e: MouseEvent) {
     if (!this.draggingItem || !this.originalEndDate) return;
 
@@ -519,27 +449,21 @@ export class BerthingSchedule extends LitElement {
     const fontSize = parseFloat(getComputedStyle(this).fontSize);
     const emPerHour = this.configuration.timeLine.emPerHour || 1;
 
-    // Calculate new end time
     const deltaHours = (deltaY / fontSize) / emPerHour;
     const newEndTime = new Date(this.originalEndDate.getTime() + deltaHours * 3600000);
 
-    // Round to nearest hour for snapping
     newEndTime.setMinutes(Math.round(newEndTime.getMinutes() / 60) * 60);
 
-    // Ensure end time is after start time
     if (newEndTime > this.draggingItem.startDate) {
       const oldEndTime = this.draggingItem.endDate.getTime();
       this.draggingItem.endDate = newEndTime;
 
-      // Update voyage timing if it exists
       if (isVesselCall(this.draggingItem) && this.draggingItem.voyage?.timing) {
         const timing = this.draggingItem.voyage.timing;
         const newEndTimeMs = newEndTime.getTime();
 
-        // If End Operation, Unberth, or Full Away fall outside the new window, adjust them
-        // while preserving the distances between them
         if (timing.endOperation || timing.unberth || timing.fullaway) {
-          // Calculate original distances from old end time
+          
           const endOpDistance = timing.endOperation
             ? oldEndTime - timing.endOperation.getTime()
             : 0;
@@ -550,24 +474,21 @@ export class BerthingSchedule extends LitElement {
             ? oldEndTime - timing.fullaway.getTime()
             : 0;
 
-          // Check if any timing falls outside the new window
           const needsAdjustment =
             (timing.endOperation && timing.endOperation.getTime() > newEndTimeMs) ||
             (timing.unberth && timing.unberth.getTime() > newEndTimeMs) ||
             (timing.fullaway && timing.fullaway.getTime() > newEndTimeMs);
 
           if (needsAdjustment) {
-            // Adjust End Operation if it exists and is outside
+            
             if (timing.endOperation && timing.endOperation.getTime() > newEndTimeMs) {
               timing.endOperation = new Date(newEndTimeMs - endOpDistance);
             }
 
-            // Adjust Unberth if it exists and is outside
             if (timing.unberth && timing.unberth.getTime() > newEndTimeMs) {
               timing.unberth = new Date(newEndTimeMs - unberthDistance);
             }
 
-            // Adjust Full Away if it exists and is outside
             if (timing.fullaway && timing.fullaway.getTime() > newEndTimeMs) {
               timing.fullaway = new Date(newEndTimeMs - fullawayDistance);
             }
@@ -579,12 +500,9 @@ export class BerthingSchedule extends LitElement {
     }
   };
 
-  /**
-   * Handle mouse up to end drag
-   */
   private handleMouseUp = () => {
     if (this.draggingItem) {
-      // Dispatch schedule update event
+      
       this.dispatchEvent(
         new CustomEvent('schedule-update', {
           detail: {
@@ -629,9 +547,6 @@ export class BerthingSchedule extends LitElement {
     `;
   }
 
-  /**
-   * Scroll to a specific date in the timeline
-   */
   public scrollToDate(target: Date) {
     const container = this.shadowRoot?.querySelector('.schedule-container') as HTMLElement;
     if (!container) return;
@@ -651,9 +566,6 @@ export class BerthingSchedule extends LitElement {
     }
   }
 
-  /**
-   * Get the nearest bollard ID to a given horizontal position
-   */
   public getNearestBollardId(positionX: number): string | null {
     const container = this.shadowRoot?.querySelector('.schedule-container') as HTMLElement;
     if (!container) return null;
@@ -676,9 +588,6 @@ export class BerthingSchedule extends LitElement {
     return nearestId;
   }
 
-  /**
-   * Get the nearest time to a given vertical position
-   */
   public getNearestTime(positionY: number): Date | null {
     const fontSize = parseFloat(getComputedStyle(this).fontSize);
     const emPerHour = this.configuration.timeLine.emPerHour || 1;
@@ -690,18 +599,12 @@ export class BerthingSchedule extends LitElement {
     return time;
   }
 
-  /**
-   * Set zoom level
-   */
   public setZoom(zoom: number) {
     zoom = Math.min(3, Math.max(0.1, zoom));
     const baseFontSize = 14;
     this.style.fontSize = `${baseFontSize * zoom}px`;
   }
 
-  /**
-   * Get current zoom level
-   */
   public getZoom(): number {
     const currentFontSize = parseFloat(getComputedStyle(this).fontSize);
     const baseFontSize = 14;

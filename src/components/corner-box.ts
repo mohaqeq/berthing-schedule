@@ -3,10 +3,6 @@ import { customElement, property } from 'lit/decorators.js';
 import type { CornerBoxConfig } from './types';
 import { formatDate } from '../utils/utils';
 
-/**
- * Corner Box Component
- * Displays the year and date range in the top-left corner
- */
 @customElement('corner-box')
 export class CornerBox extends LitElement {
   @property({ type: Object })

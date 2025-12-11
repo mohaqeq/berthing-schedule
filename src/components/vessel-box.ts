@@ -5,10 +5,6 @@ import { isVesselCall } from './types';
 import { formatTime, formatDateTime, toCSS } from '../utils/utils';
 import { loadSpritesheet, getSpriteCss } from '../utils/spritesheet';
 
-/**
- * Vessel Box Component
- * Displays a single vessel or non-working period box
- */
 @customElement('vessel-box')
 export class VesselBox extends LitElement {
   @property({ type: Object })
@@ -326,7 +322,6 @@ export class VesselBox extends LitElement {
     super.connectedCallback();
     this.addEventListener('click', this.handleClick);
 
-    // Load spritesheet data
     loadSpritesheet().then(() => {
       this.spritesheetLoaded = true;
     }).catch((error) => {
@@ -340,7 +335,7 @@ export class VesselBox extends LitElement {
   }
 
   updated() {
-    // Apply positioning and styling to the host element
+    
     this.style.left = this.left;
     this.style.top = this.top;
     this.style.width = this.width;
@@ -527,7 +522,7 @@ export class VesselBox extends LitElement {
     if (!this.spritesheetLoaded) {
       return '';
     }
-    // Ship uses center alignment since it's positioned in the center of the vessel box
+    
     return getSpriteCss(vesselType, 0.5, 'top left');
   }
 
@@ -535,7 +530,7 @@ export class VesselBox extends LitElement {
     if (!this.spritesheetLoaded) {
       return '';
     }
-    // Flag uses top-right alignment since it's positioned at top-right corner
+    
     return getSpriteCss(nationality.toLowerCase(), 0.5, 'top right');
   }
 }
